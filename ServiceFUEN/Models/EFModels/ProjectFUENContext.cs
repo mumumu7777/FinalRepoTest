@@ -45,7 +45,7 @@ namespace ServiceFUEN.Models.EFModels
         public virtual DbSet<OthersCollection> OthersCollections { get; set; }
         public virtual DbSet<Photo> Photos { get; set; }
         public virtual DbSet<PhotoReport> PhotoReports { get; set; }
-        public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<ProductDTO> Products { get; set; }
         public virtual DbSet<ProductPhoto> ProductPhotos { get; set; }
         public virtual DbSet<Question> Questions { get; set; }
         public virtual DbSet<ShoppingCart> ShoppingCarts { get; set; }
@@ -340,7 +340,7 @@ namespace ServiceFUEN.Models.EFModels
                     .WithMany(p => p.Events)
                     .UsingEntity<Dictionary<string, object>>(
                         "EventItem",
-                        l => l.HasOne<Product>().WithMany().HasForeignKey("ProductId").HasConstraintName("FK__EventItem__Produ__40F9A68C"),
+                        l => l.HasOne<ProductDTO>().WithMany().HasForeignKey("ProductId").HasConstraintName("FK__EventItem__Produ__40F9A68C"),
                         r => r.HasOne<Event>().WithMany().HasForeignKey("EventId").HasConstraintName("FK__EventItem__Event__40058253"),
                         j =>
                         {
@@ -471,7 +471,7 @@ namespace ServiceFUEN.Models.EFModels
                     .WithMany(p => p.Members)
                     .UsingEntity<Dictionary<string, object>>(
                         "Favorite",
-                        l => l.HasOne<Product>().WithMany().HasForeignKey("ProductId").HasConstraintName("FK__Favorites__Produ__42E1EEFE"),
+                        l => l.HasOne<ProductDTO>().WithMany().HasForeignKey("ProductId").HasConstraintName("FK__Favorites__Produ__42E1EEFE"),
                         r => r.HasOne<Member>().WithMany().HasForeignKey("MemberId").HasConstraintName("FK__Favorites__Membe__41EDCAC5"),
                         j =>
                         {
@@ -630,7 +630,7 @@ namespace ServiceFUEN.Models.EFModels
                     .HasConstraintName("FK__PhotoRepo__Repor__4C6B5938");
             });
 
-            modelBuilder.Entity<Product>(entity =>
+            modelBuilder.Entity<ProductDTO>(entity =>
             {
                 entity.Property(e => e.ManufactorDate).HasColumnType("datetime");
 

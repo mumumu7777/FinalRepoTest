@@ -12,6 +12,6 @@ namespace ServiceFUEN.Models.EFModels
         public int Number { get; set; }
 
         public virtual Member Member { get; set; }
-        public virtual Product Product { get; set; }
+        public virtual ProductDTO Product { get; set; }
     }
 }

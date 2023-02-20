@@ -1,23 +1,15 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <div style="font-size: 3em;" @click="vueTest()">Vue測試!!!!!</div>
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app">
+    <router-view> </router-view>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  },
-  methods: {
-    vueTest(){
-      alert("你好")
-    }
-  }
-}
+  name: "App",
+  components: {},
+  methods: {},
+};
 </script>
 
 <style>

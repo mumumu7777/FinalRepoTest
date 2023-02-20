@@ -1,5 +1,13 @@
+const path = require('path')
 module.exports = {
   outputDir: "../wwwroot",
+  configureWebpack: {
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, 'src')
+      }
+    }
+  },
   devServer: {
     open: true,
     host: 'localhost',  // 設置主機地址

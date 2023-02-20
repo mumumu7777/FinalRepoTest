@@ -9,7 +9,7 @@ namespace ServiceFUEN.Models.EFModels
     {
         public Event()
         {
-            Products = new HashSet<Product>();
+            Products = new HashSet<ProductDTO>();
         }
 
         public int Id { get; set; }
@@ -18,6 +18,6 @@ namespace ServiceFUEN.Models.EFModels
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
-        public virtual ICollection<Product> Products { get; set; }
+        public virtual ICollection<ProductDTO> Products { get; set; }
     }
 }

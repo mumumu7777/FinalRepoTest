@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace ServiceFUEN.Models.EFModels
 {
-    public partial class Product
+    public partial class ProductDTO
     {
-        public Product()
+        public ProductDTO()
         {
             OrderItems = new HashSet<OrderItem>();
             ProductPhotos = new HashSet<ProductPhoto>();
