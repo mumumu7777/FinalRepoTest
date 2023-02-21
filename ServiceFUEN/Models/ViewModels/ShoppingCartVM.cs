@@ -2,10 +2,16 @@
 
 namespace ServiceFUEN.Models.ViewModels
 {
-	public class ShoppingCartVM
-	{
-		public int MemberId { get; set; }
-		public int ProductId { get; set; }
-		public int Number { get; set; }
-	}
+    public class ShoppingCartVM
+    {
+        public int MemberId { get; set; }
+        public int State { get; set; }
+        public CartProduct[] CartProducts { get; set; }
+    }
+
+    public class CartProduct
+    {
+        public int Id { get; set; }
+        public int Qty { get; set; }
+    }
 }
