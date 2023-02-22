@@ -155,7 +155,24 @@ namespace ServiceFUEN.Controllers
             }
         }
 
-    }
+
+		[HttpPost("addToCart")]
+        public async Task<IActionResult> addToCart([Bind(nameof(ShoppingCartVM))] ShoppingCartVM shoppingCartVM)
+		{
+
+            if (shoppingCartVM.CartProducts == null)
+            {
+
+            }
+
+
+            return null;
+
+
+		}
+
+
+	}
 
 
 }
