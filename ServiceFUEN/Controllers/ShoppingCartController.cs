@@ -167,7 +167,7 @@ namespace ServiceFUEN.Controllers
 
 				if (shoppingCartVM.CartProducts == null || shoppingCartVM.CartProducts.Length==0)
 				{
-					return 
+					return null;
 
 				}
 
