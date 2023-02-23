@@ -13,5 +13,6 @@ namespace ServiceFUEN.Models.ViewModels
     {
         public int Id { get; set; }
         public int Qty { get; set; }
+        public string Name { get; set; }
     }
 }

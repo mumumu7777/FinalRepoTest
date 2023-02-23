@@ -9,12 +9,12 @@ namespace ServiceFUEN.Models.EFModels
     {
         public Category()
         {
-            Products = new HashSet<ProductDTO>();
+            Products = new HashSet<Product>();
         }
 
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public virtual ICollection<ProductDTO> Products { get; set; }
+        public virtual ICollection<Product> Products { get; set; }
     }
 }
