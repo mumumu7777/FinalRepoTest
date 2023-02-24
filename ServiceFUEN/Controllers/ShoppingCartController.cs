@@ -26,6 +26,8 @@ namespace ServiceFUEN.Controllers
 
         }
 
+
+        //抓商品
         [HttpGet("GetProducts")]
         [AllowAnonymous]
         public async Task<IActionResult> GetProducts()
@@ -50,6 +52,8 @@ namespace ServiceFUEN.Controllers
 
         }
 
+
+        //抓取使用者購物車
         [HttpGet("GetUserCart")]
         [AllowAnonymous]
         public async Task<IActionResult> GetUserCart(int userId)
@@ -87,7 +91,7 @@ namespace ServiceFUEN.Controllers
 
         }
 
-
+      
         /// <summary>
         /// 接收購物車內容、算錢、存DB
         /// </summary>
@@ -114,20 +118,19 @@ namespace ServiceFUEN.Controllers
                         return BadRequest(rtn);
                     }
 
-<<<<<<< HEAD
+
 				if (shoppingCartVM.CartProducts == null || shoppingCartVM.CartProducts.Length==0)
 				{
 					return null;
 
 				}
-=======
+
                     if (shoppingCartVM.CartProducts == null || shoppingCartVM.CartProducts.Length == 0)
                     {
                         rtn.Code = (int)RetunCode.呼叫失敗;
                         rtn.Messsage = "購物車無商品";
                         return BadRequest(rtn);
                     }
->>>>>>> 7a1cad7c3678905f139b38e3d933ce03c25c34b3
 
 
                     // 存主檔
@@ -196,8 +199,6 @@ namespace ServiceFUEN.Controllers
 
                     }
 
-
-
                     transaction.Commit();
 
                     rtn.Code = (int)RetunCode.呼叫成功;
@@ -216,6 +217,8 @@ namespace ServiceFUEN.Controllers
         }
 
 
+
+        //加入購物車
         [HttpPost("AddToCart/{memberID}")]
         public async Task<IActionResult> AddToCart([Bind(nameof(CartProduct))] CartProduct cartProduct, int memberID)
         {
@@ -312,6 +315,32 @@ namespace ServiceFUEN.Controllers
             }
 
         }
+
+
+        //刪除購物車商品
+
+        [HttpDelete]
+        public void DeleteCartItem(CartProduct item)
+        {
+
+
+            
+
+
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
 
 
     }
