@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ServiceFUEN.Models.EFModels;
@@ -317,6 +318,7 @@ namespace ServiceFUEN.Controllers
         }
 
 
+<<<<<<< HEAD
         //刪除購物車商品
 
         [HttpDelete]
@@ -329,12 +331,29 @@ namespace ServiceFUEN.Controllers
 
 
 
+=======
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteCartItem(CartProduct item, int memberid )
+        {
+            ReturnVM rtn = new ReturnVM();
+            if (memberid == null || memberid ==0 )
+            {
+                rtn.Code = (int)RetunCode.呼叫失敗;
+                rtn.Messsage = "發生未知錯誤,查無此會員";
+                return BadRequest(rtn);
+            }
+
+            //找到該購物車商品
+             var CartItem = _context.ShoppingCarts.Select(x => x.ProductId == item.Id);
+>>>>>>> cd33ba8f99fafd83e7d05b1a8bf23e651803bac9
 
 
 
         }
 
 
+<<<<<<< HEAD
 
 
 
@@ -343,6 +362,8 @@ namespace ServiceFUEN.Controllers
 
 
 
+=======
+>>>>>>> cd33ba8f99fafd83e7d05b1a8bf23e651803bac9
     }
 
 
