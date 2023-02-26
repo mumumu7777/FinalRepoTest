@@ -1,6 +1,15 @@
 <template>
   <div class="container-fluid layout01 px-0">
     <div class="header w-100">網頁Header</div>
+    <!-- 
+      slot 要放進去的插槽 包在組件中 
+      必須指定name Ex:
+      <Layout01>
+        <template #contents>
+          .....頁面內容
+        </template> 
+      </Layout01>
+    -->
     <slot class="body w-100" name="contents"></slot>
     <div class="footer w-100">網頁Footer</div>
   </div>
@@ -12,12 +21,7 @@ export default {
 };
 </script>
 <style scoped>
-html,
-body {
-  width: 100%;
-}
 .layout01 {
-  min-height: 100vh;
 }
 .layout01 > .header {
   height: 3em;

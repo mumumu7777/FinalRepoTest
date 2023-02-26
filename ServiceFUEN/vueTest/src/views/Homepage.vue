@@ -43,6 +43,7 @@
 
 <script>
 import { useRouter, useRoute } from "vue-router";
+
 export default {
   data() {
     return {
@@ -103,7 +104,7 @@ export default {
     /*================================== 購物車行為及api  =================================== */
 
     async addToCart(item, mode) {
-      // 呼叫組件函式
+      // 呼叫子組件函式
       this.$refs.shoppingCart.addToCart(item, mode);
     },
   },
