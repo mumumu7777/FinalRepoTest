@@ -19,10 +19,24 @@ import { faUserSecret, faHouse, faPlus, faMinus, faTrash } from '@fortawesome/fr
 /* add icons to the library */
 library.add(faUserSecret, faHouse, faPlus, faMinus, faTrash)
 
+// sweet alert
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
+
+// vueloding
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/css/index.css';
+
+const options = {
+    confirmButtonColor: '#41b882',
+    cancelButtonColor: '#ff7674',
+};
 
 const app = createApp(App)
 app
     .component('font-awesome-icon', FontAwesomeIcon)
+    .component('Loading', Loading)
+    .use(VueSweetalert2, options)
     .use(router).mount('#app')
 axios.defaults.baseURL = process.env.VUE_APP_API
 app.config.globalProperties.$axios = axios;
