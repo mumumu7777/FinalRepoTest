@@ -277,8 +277,6 @@ export default {
         console.log("input", input);
         console.log("count", count);
 
-        let qty = 1;
-
         // 假如數量 = 1 且按下-按鈕 (mode = 1)
         if (mode == 1 && count == 1) {
           // 刪除動作
@@ -389,7 +387,8 @@ export default {
             })
             .catch((err) => {
               console.log(err.response.data);
-              this.errSweetAlert.text = err.response.data.messsage;
+              this.errSweetAlert.text =
+                err.response.data.messsage || "其他錯誤";
               this.$swal.fire(this.errSweetAlert);
               this.errSweetAlert.text = "";
               this.loading = false;
