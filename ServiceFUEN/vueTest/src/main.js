@@ -27,6 +27,12 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/css/index.css';
 
+// 網頁模板
+import Layout01 from "@/layout/Layout01.vue";
+
+// 購物車組件
+import ShoppingCart from "@/components/ShoppingCart.vue";
+
 const options = {
     confirmButtonColor: '#41b882',
     cancelButtonColor: '#ff7674',
@@ -36,6 +42,8 @@ const app = createApp(App)
 app
     .component('font-awesome-icon', FontAwesomeIcon)
     .component('Loading', Loading)
+    .component('Layout01', Layout01)
+    .component('ShoppingCart', ShoppingCart)
     .use(VueSweetalert2, options)
     .use(router).mount('#app')
 axios.defaults.baseURL = process.env.VUE_APP_API
