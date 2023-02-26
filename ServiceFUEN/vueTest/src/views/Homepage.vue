@@ -261,10 +261,11 @@ export default {
       this.cartsSelect = [];
     },
 
+    // 加入購物車
     // 每次異動購物車都寫storage
     // mode: 0: 數量+1 1: 數量-1 2: 指定數量 3: 加入購物車
     async addToCart(item, mode, className) {
-      // 點選 + - 或 直接輸入數量
+      // 點選 + - 或 直接輸入數量 (mode 0 1 2)
       if (mode != 3) {
         // 取得物件數量
         let input = document.querySelector(className);
@@ -308,7 +309,7 @@ export default {
         // 儲存到storage
         this.saveLocalStorage("cartsSelect", this.cartsSelect);
       } else {
-        // 點選加入購物車
+        // 點選加入購物車(mode 3)
 
         // 防呆 依id確認購物車有沒有商品 有的話更新陣列數量+1 沒有新增一筆
         let findProduct = this.cartsSelect.find((a) => a.Id == item.id);
