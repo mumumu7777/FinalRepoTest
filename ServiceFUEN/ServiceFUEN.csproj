@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="CommomLib\ECPay\" />
     <Folder Include="Models\DTOs\" />
     <Folder Include="Models\EFModels\" />
     <Folder Include="Models\Infrastructures\" />
@@ -36,6 +37,12 @@
     <None Remove="Models\Infrastructures\ExtensionMethods\" />
     <None Remove="Models\Infrastructures\Repositories\" />
     <None Remove="Models\Services\Interfaces\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ECPay.Payment.Integration">
+      <HintPath>CommomLib\ECPay\ECPay.Payment.Integration.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
