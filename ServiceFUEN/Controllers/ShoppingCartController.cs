@@ -220,6 +220,8 @@ namespace ServiceFUEN.Controllers
                         Items = payItems
                     };
 
+                    // 將必要參數傳入 最後會產生與綠界付款相符的付款類別
+                    // 裡面有付款的id 資料庫要存才能依付款id 使用CallBack找到這筆
                     IPayment payment = new PaymentConfiguration()
                         .Send.ToApi(
                             url: service.Url)
@@ -247,7 +249,7 @@ namespace ServiceFUEN.Controllers
 
                     rtn.Data = new
                     {
-                        formData = payment, // 前端checkout頁面 需要的post資料
+                        formData = payment, // 前端需要的付款資料
                     };
                     rtn.Code = (int)RetunCode.呼叫成功;
                     rtn.Messsage = "訂單已儲存，前往付款頁面";
