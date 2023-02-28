@@ -107,7 +107,7 @@
       </div>
     </div>
   </div>
-
+  <div v-html="paymentForm"></div>
   <loading :active="loading"></loading>
 </template>
 
@@ -121,6 +121,7 @@ export default {
       products: null,
       cartsSelect: [],
       searchText: "",
+      paymentForm: "",
       // vue loading
       loading: false,
 
@@ -195,27 +196,6 @@ export default {
     },
     goNotFound() {
       this.toNotFound();
-    },
-    customClass() {
-      return "test";
-    },
-    /*================================== 產品行為及api  =================================== */
-    search() {
-      alert(this.searchText);
-    },
-
-    async GetProducts() {
-      await this.$axios
-        .get(`api/ShoppingCart/GetProducts`)
-        .then((res) => {
-          if (res.data) {
-            this.products = res.data.data;
-            console.log(this.products);
-          }
-        })
-        .catch((error) => {
-          console.log(err.response.data);
-        });
     },
 
     /*================================== 購物車行為及api  =================================== */
@@ -350,12 +330,29 @@ export default {
                 if ((res.data !== null) & (res.data !== undefined)) {
                   // 成功清購物車
                   this.rmStorageCart();
+                  // alert訊息
                   this.successSweetAlert.text = res.data.messsage;
                   this.$swal.fire(this.successSweetAlert);
                   this.successSweetAlert.text = "";
-
-                  // 購買後將後端產的付款參數組成form post到綠界 並覆寫網頁
-                  document.write(this.buildPaymentForm(res.data.data.formData));
+                  /*
+                    購買後將後端產的付款參數組成form 並存在paymentForm
+                    因為 <div v-html="paymentForm"></div> 使用v-html
+                    用字串拼接的form將以html方式顯示在網頁
+                  */
+                  this.paymentForm = this.buildPaymentForm(
+                    res.data.data.formData // 後端回傳付款參數
+                  );
+                  this.loading = false;
+                  /*
+                    Vue更新html並不會即時反應(因為他是操作虛擬Dom 不是直接操作Dom元素)，
+                    若直接使用document.getElementById("payment")會抓不到
+                    必須使用$nextTick: 在下次畫面更新後做事
+                  */
+                  this.$nextTick(() => {
+                    // 將表單內容post到綠界金流
+                    document.getElementById("payment").submit();
+                    this.paymentForm = "";
+                  });
                 }
               }
             })
@@ -374,7 +371,6 @@ export default {
     // 購買後將後端產的付款參數組成form post到綠界
     buildPaymentForm(trendModels) {
       let rtn = ``;
-      rtn += `<div style="font-size: 2em;">交易處理中...<\/div>`;
       rtn += `<form action="${trendModels.url}" method="post" id="payment">`;
       // 必要參數
       rtn += `<input type="hidden" name="MerchantID" value="${trendModels.merchantID}"\/>`;
@@ -453,9 +449,6 @@ export default {
         rtn += `<input type="hidden" name="UnionPay" value="${trendModels.unionPay}"\/>`;
       }
       rtn += `</form>`;
-      rtn += `<script>`;
-      rtn += `document.getElementById("payment").submit();`;
-      rtn += `<\/script>`;
 
       return rtn;
     },
