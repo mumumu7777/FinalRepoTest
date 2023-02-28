@@ -193,8 +193,10 @@ namespace ServiceFUEN.Controllers
                     }
 
 
-                   // 將訂單加入後資料庫後 取得付款資訊傳回前端
-                   var service = new
+                    // 將訂單加入後資料庫後 取得付款資訊傳回前端
+                    // 參數意思可關註解並大致參考:
+                    // Demo/ECPay_bak.cs (.net framwork版用法)
+                    var service = new
                     {
                         Url = ECPayServiceURL,
                         MerchantId = ECPayMerchantID,
