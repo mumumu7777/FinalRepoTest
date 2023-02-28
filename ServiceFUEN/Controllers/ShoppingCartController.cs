@@ -239,7 +239,7 @@ namespace ServiceFUEN.Controllers
 
                     rtn.Data = new
                     {
-                        formData = payment, // post資料
+                        formData = payment, // 前端checkout頁面 需要的post資料
                     };
                     rtn.Code = (int)RetunCode.呼叫成功;
                     rtn.Messsage = "訂單已儲存，前往付款頁面";
