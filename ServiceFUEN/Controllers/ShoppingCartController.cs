@@ -231,8 +231,9 @@ namespace ServiceFUEN.Controllers
                             date: payInfo.Date)
                         .Transaction.UseMethod(
                             method: payInfo.Method)
-                        .Transaction.WithItems( // 這邊加入算好折扣的金額 沒傳系統會用原價
-                            items: payInfo.Items)
+                        .Transaction.WithItems( // 這邊加入算好折扣的金額amount 如果是null(預設)系統會用原價
+                            items: payInfo.Items,
+                            amount: null)
                         .Generate();
 
                     transaction.Commit();
