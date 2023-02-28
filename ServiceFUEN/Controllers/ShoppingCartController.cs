@@ -41,12 +41,13 @@ namespace ServiceFUEN.Controllers
             _context = context;
             _configuration = configuration;
 
-            // 讀取設定檔 (開發與產環境url會不同)
+            //  讀取設定檔 (開發與生產環境相同)
             ECPayServiceURL = _configuration["ECPay:ECPayServiceURL"] ?? "";
             ECPayHashKey = _configuration["ECPay:ECPayHashKey"] ?? "";
             ECPayHashIV = _configuration["ECPay:ECPayHashIV"] ?? "";
             ECPayMerchantID = _configuration["ECPay:ECPayMerchantID"] ?? "";
 
+            // 讀取設定檔 (開發與生產環境url會不同 所以分別存)
 #if DEBUG
             ECPayHomeURL = _configuration["ECPay:ECPayHomeURL_Dev"] ?? "";
             ECPayReturnURL = _configuration["ECPay:ECPayReturnURL_Dev"] ?? "";
@@ -193,9 +194,13 @@ namespace ServiceFUEN.Controllers
                     }
 
 
-                    // 將訂單加入後資料庫後 取得付款資訊傳回前端
+                    // 綠界金流官網只有提供.net framwork版dll 但是使用的話跨平台會有問題
                     // 參數意思可關註解並大致參考:
                     // Demo/ECPay_bak.cs (.net framwork版用法)
+
+                    // 目前使用函式庫: FluentEcpay (.net core可用不需引入dll)
+
+                    // 將訂單加入後資料庫後 取得付款資訊傳回前端
                     var service = new
                     {
                         Url = ECPayServiceURL,
