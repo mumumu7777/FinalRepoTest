@@ -44,6 +44,7 @@ router.afterEach((to, from) => {
     document.documentElement.scrollTop = 0
   }
 })
+
 // router.beforeEach((to, from, next) => {
 //   let token = _global.token;
 //   if (!token) {

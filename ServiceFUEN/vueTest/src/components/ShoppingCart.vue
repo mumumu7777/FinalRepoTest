@@ -348,9 +348,13 @@ export default {
             .then((res) => {
               if (res.status == 204 || res.status == 200) {
                 if ((res.data !== null) & (res.data !== undefined)) {
+                  // 成功清購物車
+                  this.rmStorageCart();
                   this.successSweetAlert.text = res.data.messsage;
                   this.$swal.fire(this.successSweetAlert);
                   this.successSweetAlert.text = "";
+
+                  // 購買後將後端產的付款參數組成form post到綠界 並覆寫網頁
                   document.write(this.buildPaymentForm(res.data.data.formData));
                 }
               }
@@ -370,6 +374,7 @@ export default {
     // 購買後將後端產的付款參數組成form post到綠界
     buildPaymentForm(trendModels) {
       let rtn = ``;
+      rtn += `<div style="font-size: 2em;">交易處理中...<\/div>`;
       rtn += `<form action="${trendModels.url}" method="post" id="payment">`;
       // 必要參數
       rtn += `<input type="hidden" name="MerchantID" value="${trendModels.merchantID}"\/>`;
@@ -447,9 +452,11 @@ export default {
       if (trendModels.unionPay) {
         rtn += `<input type="hidden" name="UnionPay" value="${trendModels.unionPay}"\/>`;
       }
-
       rtn += `</form>`;
-      rtn += `<script>document.getElementById("payment").submit()<\/script>`;
+      rtn += `<script>`;
+      rtn += `document.getElementById("payment").submit();`;
+      rtn += `<\/script>`;
+
       return rtn;
     },
 
