@@ -309,8 +309,12 @@ export default {
         });
       }
     },
-
-    // 購物車提交，將購物車提交至後端並儲存，成功的劃清storage
+    /*
+      購物車提交:
+      1. 將購物車提交至後端並儲存訂單、產生綠界付款需要的參數
+      2. http狀態 200 得到付款參數 用付款參數組form
+      3. 提交表單到綠界支付 並清空參數及購物車
+    */
     async cartSubmit() {
       // 確認購買
       await this.$swal.fire(this.buySweetConfirm).then((result) => {
@@ -335,7 +339,7 @@ export default {
                   this.$swal.fire(this.successSweetAlert);
                   this.successSweetAlert.text = "";
                   /*
-                    購買後將後端產的付款參數組成form 並存在paymentForm
+                    提交成功將後端產的付款參數組成form 並存在paymentForm
                     因為 <div v-html="paymentForm"></div> 使用v-html
                     用字串拼接的form將以html方式顯示在網頁
                   */
