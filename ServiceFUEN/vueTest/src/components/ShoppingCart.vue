@@ -168,7 +168,11 @@ export default {
     const toNotFound = () => {
       router.push(`/notfound`);
     };
-    return { toNotFound };
+
+    const toCheckOut = () => {
+      router.push(`/checkout`);
+    };
+    return { toNotFound, toCheckOut };
   },
   // 比mounted早 沒有html
   // created() {
@@ -350,9 +354,16 @@ export default {
                   this.successSweetAlert.text = res.data.messsage;
                   this.$swal.fire(this.successSweetAlert);
                   this.successSweetAlert.text = "";
-
+                  console.log(res.data.data);
                   // 成功清空購物車
                   this.rmStorageCart();
+                  // 將從server拿到的結帳資訊存入 sessionStorage(瀏覽器關閉就會消失)
+                  sessionStorage.setItem(
+                    "CartTrendModels",
+                    JSON.stringify(res.data.data.formData)
+                  );
+                  // 導到結帳頁做與綠界系統介接行為
+                  this.toCheckOut();
                   this.loading = false;
                 }
               }

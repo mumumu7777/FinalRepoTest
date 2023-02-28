@@ -62,6 +62,7 @@ export default {
     const toNotFound = () => {
       router.push(`/notfound`);
     };
+
     return { toNotFound };
   },
   // 比mounted早 沒有html

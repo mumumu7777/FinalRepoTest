@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FluentEcpay;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Metadata;
@@ -19,12 +20,44 @@ namespace ServiceFUEN.Controllers
     {
 
         private readonly ProjectFUENContext _context;
+        private readonly IConfiguration _configuration;
 
-        public ShoppingCartController(ProjectFUENContext context)
+
+        #region 綠界支付參數
+        private readonly string ECPayServiceURL;
+        private readonly string ECPayHashKey;
+        private readonly string ECPayHashIV;
+        private readonly string ECPayMerchantID;
+
+        private readonly string ECPayHomeURL;
+        private readonly string ECPayReturnURL;
+        private readonly string ECPayClientBackURL;
+        private readonly string ECPayOrderResultURL;
+        #endregion
+
+        public ShoppingCartController(ProjectFUENContext context, IConfiguration configuration)
         {
 
             _context = context;
+            _configuration = configuration;
 
+            // 讀取設定檔 (開發與產環境url會不同)
+            ECPayServiceURL = _configuration["ECPay:ECPayServiceURL"] ?? "";
+            ECPayHashKey = _configuration["ECPay:ECPayHashKey"] ?? "";
+            ECPayHashIV = _configuration["ECPay:ECPayHashIV"] ?? "";
+            ECPayMerchantID = _configuration["ECPay:ECPayMerchantID"] ?? "";
+
+#if DEBUG
+            ECPayHomeURL = _configuration["ECPay:ECPayHomeURL_Dev"] ?? "";
+            ECPayReturnURL = _configuration["ECPay:ECPayReturnURL_Dev"] ?? "";
+            ECPayClientBackURL = _configuration["ECPay:ECPayClientBackURL_Dev"] ?? "";
+            ECPayOrderResultURL = _configuration["ECPay:ECPayOrderResultURL_Dev"] ?? "";
+#else
+                        ECPayHomeURL = _configuration["ECPay:ECPayHomeURL_Prod"] ?? "";
+                        ECPayReturnURL = _configuration["ECPay:ECPayReturnURL__Prod"] ?? "";
+                        ECPayClientBackURL = _configuration["ECPay:ECPayClientBackURL_Prod"] ?? "";
+                        ECPayOrderResultURL = _configuration["ECPay:ECPayOrderResultURL_Prod"] ?? "";
+#endif
         }
 
 
@@ -101,20 +134,19 @@ namespace ServiceFUEN.Controllers
                     _context.OrderDetails.Add(orderDetail);
                     _context.SaveChanges();
 
-                    // 抓已儲存主檔id
-                    int orderDetailID = _context.OrderDetails
+                    // 抓已儲存訂單主檔
+                    var orderDetailSaved = _context.OrderDetails
                         .Where(a =>
                             a.MemberId == orderDetail.MemberId &&
                             a.OrderDate == orderDetail.OrderDate &&
                             a.State == orderDetail.State
                         )
-                        .Select(a => a.Id)
                         .FirstOrDefault();
 
-                    if (orderDetailID == 0)
+                    if (orderDetailSaved == null)
                     {
                         rtn.Code = (int)RetunCode.呼叫失敗;
-                        rtn.Messsage = "未成功儲存ID";
+                        rtn.Messsage = "未成功儲存訂單";
                         return BadRequest(rtn);
                     }
 
@@ -132,7 +164,7 @@ namespace ServiceFUEN.Controllers
                         // 找到商品加入訂單明細檔
                         orderItemList.Add(new OrderItem
                         {
-                            OrderId = orderDetailID,
+                            OrderId = orderDetailSaved.Id,
                             ProductId = product.Id,
                             ProductName = product.Name,
                             ProductPrice = product.Price,
@@ -144,20 +176,73 @@ namespace ServiceFUEN.Controllers
                     _context.OrderItems.AddRange(orderItemList);
                     _context.SaveChanges();
 
+                    // 抓出已儲存訂單明細檔
+                    var orderItemSaved = _context.OrderItems.Where(a =>a.OrderId == orderDetailSaved.Id).ToList();
 
-                    // 刪購物車資料
-                    var useCart = _context.ShoppingCarts.Where(a => a.MemberId == member.Id).ToList();
+                    // 將商品存入付款資訊
+                    List<Item> payItems = new List<Item>();
 
-                    if (useCart.Count > 0)
+                    foreach(var item in orderItemSaved)
                     {
-                        _context.ShoppingCarts.RemoveRange(useCart);
-
+                        payItems.Add(new Item
+                        {
+                            Name = item.ProductName,
+                            Price = item.ProductPrice,
+                            Quantity = item.ProductNumber
+                        });
                     }
+
+
+                   // 將訂單加入後資料庫後 取得付款資訊傳回前端
+                   var service = new
+                    {
+                        Url = ECPayServiceURL,
+                        MerchantId = ECPayMerchantID,
+                        HashKey = ECPayHashKey,
+                        HashIV = ECPayHashIV,
+                        ServerUrl = $"{ECPayHomeURL}/api/ShoppingCart/CallBack",
+                        ClientUrl = ECPayOrderResultURL
+                    };
+
+                    var payInfo = new
+                    {
+                        No = "ServiceFUEN", // 訂單編號前綴
+                        Description = "測試購物系統",
+                        Date = DateTime.Now,
+                        Method = EPaymentMethod.Credit,
+                        Items = payItems
+                    };
+
+                    IPayment payment = new PaymentConfiguration()
+                        .Send.ToApi(
+                            url: service.Url)
+                        .Send.ToMerchant(
+                            service.MerchantId)
+                        .Send.UsingHash(
+                            key: service.HashKey,
+                            iv: service.HashIV)
+                        .Return.ToServer(
+                            url: service.ServerUrl)
+                        .Return.ToClient(
+                            url: service.ClientUrl)
+                        .Transaction.New(
+                            no: payInfo.No,
+                            description: payInfo.Description,
+                            date: payInfo.Date)
+                        .Transaction.UseMethod(
+                            method: payInfo.Method)
+                        .Transaction.WithItems(
+                            items: payInfo.Items)
+                        .Generate();
 
                     transaction.Commit();
 
+                    rtn.Data = new
+                    {
+                        formData = payment, // post資料
+                    };
                     rtn.Code = (int)RetunCode.呼叫成功;
-                    rtn.Messsage = "訂單已儲存";
+                    rtn.Messsage = "訂單已儲存，前往付款頁面";
 
                     return Ok(rtn);
                 }
@@ -169,6 +254,19 @@ namespace ServiceFUEN.Controllers
                     return BadRequest(rtn);
                 }
             }
+        }
+
+        [HttpPost("CallBack")]
+        public IActionResult Callback(PaymentResult result)
+        {
+
+
+            // 務必判斷檢查碼是否正確。
+            if (!CheckMac.PaymentResultIsValid(result, ECPayHashKey, ECPayHashIV)) return BadRequest();
+
+            // 處理後續訂單狀態的更動等等...。
+
+            return Ok("1|OK");
         }
 
 

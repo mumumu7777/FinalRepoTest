@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="CommomLib\Payment\Models\" />
     <Folder Include="Models\DTOs\" />
     <Folder Include="Models\EFModels\" />
     <Folder Include="Models\Infrastructures\" />
@@ -37,6 +36,10 @@
     <None Remove="Models\Infrastructures\ExtensionMethods\" />
     <None Remove="Models\Infrastructures\Repositories\" />
     <None Remove="Models\Services\Interfaces\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FluentEcpay\FluentEcpay.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
