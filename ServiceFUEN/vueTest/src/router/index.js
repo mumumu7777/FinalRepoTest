@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory, scrollBehavior } from "vue-router";
 import axios from 'axios';
 import Homepage from "@/views/Homepage.vue";
-import CheckOut from "@/views/CheckOut.vue";
 import CheckOutReport from "@/views/CheckOutReport.vue";
 import NotFound from "@/views/NotFound.vue";
 
@@ -16,11 +15,6 @@ const routes = [
     path: "/homepage",
     component: Homepage,
     name: 'homepage',
-  },
-  {
-    path: "/checkout",
-    component: CheckOut,
-    name: 'checkout',
   },
   {
     path: "/checkoutreport",

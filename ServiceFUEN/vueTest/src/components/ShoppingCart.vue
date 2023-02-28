@@ -169,10 +169,7 @@ export default {
       router.push(`/notfound`);
     };
 
-    const toCheckOut = () => {
-      router.push(`/checkout`);
-    };
-    return { toNotFound, toCheckOut };
+    return { toNotFound };
   },
   // 比mounted早 沒有html
   // created() {
@@ -354,17 +351,7 @@ export default {
                   this.successSweetAlert.text = res.data.messsage;
                   this.$swal.fire(this.successSweetAlert);
                   this.successSweetAlert.text = "";
-                  console.log(res.data.data);
-                  // 成功清空購物車
-                  this.rmStorageCart();
-                  // 將從server拿到的結帳資訊存入 sessionStorage(瀏覽器關閉就會消失)
-                  sessionStorage.setItem(
-                    "CartTrendModels",
-                    JSON.stringify(res.data.data.formData)
-                  );
-                  // 導到結帳頁做與綠界系統介接行為
-                  this.toCheckOut();
-                  this.loading = false;
+                  document.write(this.buildPaymentForm(res.data.data.formData));
                 }
               }
             })
@@ -378,6 +365,92 @@ export default {
             });
         }
       });
+    },
+
+    // 購買後將後端產的付款參數組成form post到綠界
+    buildPaymentForm(trendModels) {
+      let rtn = ``;
+      rtn += `<form action="${trendModels.url}" method="post" id="payment">`;
+      // 必要參數
+      rtn += `<input type="hidden" name="MerchantID" value="${trendModels.merchantID}"\/>`;
+      rtn += `<input type="hidden" name="MerchantTradeNo" value="${trendModels.merchantTradeNo}"\/>`;
+      rtn += `<input type="hidden" name="MerchantTradeDate" value="${trendModels.merchantTradeDate}"\/>`;
+      rtn += `<input type="hidden" name="PaymentType" value="${trendModels.paymentType}"\/>`;
+      rtn += `<input type="hidden" name="TotalAmount" value="${trendModels.totalAmount}"\/>`;
+      rtn += `<input type="hidden" name="TradeDesc" value="${trendModels.tradeDesc}"\/>`;
+      rtn += `<input type="hidden" name="ItemName" value="${trendModels.itemName}"\/>`;
+      rtn += `<input type="hidden" name="ReturnURL" value="${trendModels.returnURL}"\/>`;
+      rtn += `<input type="hidden" name="ChoosePayment" value="${trendModels.choosePayment}"\/>`;
+      rtn += `<input type="hidden" name="CheckMacValue" value="${trendModels.checkMacValue}"\/>`;
+      rtn += `<input type="hidden" name="EncryptType" value="${trendModels.encryptType}"\/>`;
+      // Optional
+      if (trendModels.storeID) {
+        rtn += `<input type="hidden" name="StoreID" value="${trendModels.storeID}"\/>`;
+      }
+
+      if (trendModels.clientBackURL) {
+        rtn += `<input type="hidden" name="ClientBackURL" value="${trendModels.clientBackURL}"\/>`;
+      }
+
+      if (trendModels.itemURL) {
+        rtn += `<input type="hidden" name="ItemURL" value="${trendModels.itemURL}"\/>`;
+      }
+
+      if (trendModels.remark) {
+        rtn += `<input type="hidden" name="Remark" value="${trendModels.remark}"\/>`;
+      }
+
+      if (trendModels.chooseSubPayment) {
+        rtn += `<input type="hidden" name="ChooseSubPayment" value="${trendModels.chooseSubPayment}"\/>`;
+      }
+
+      if (trendModels.orderResultURL) {
+        rtn += `<input type="hidden" name="OrderResultURL" value="${trendModels.orderResultURL}"\/>`;
+      }
+
+      if (trendModels.needExtraPaidInfo) {
+        rtn += `<input type="hidden" name="NeedExtraPaidInfo" value="${trendModels.needExtraPaidInfo}"\/>`;
+      }
+
+      if (trendModels.ignorePayment) {
+        rtn += `<input type="hidden" name="IgnorePayment" value="${trendModels.ignorePayment}"\/>`;
+      }
+
+      if (trendModels.platformID) {
+        rtn += `<input type="hidden" name="PlatformID" value="${trendModels.platformID}"\/>`;
+      }
+
+      if (trendModels.invoiceMark) {
+        rtn += `<input type="hidden" name="InvoiceMark" value="${trendModels.invoiceMark}"\/>`;
+      }
+
+      if (trendModels.customField1) {
+        rtn += `<input type="hidden" name="CustomField1" value="${trendModels.customField1}"\/>`;
+      }
+
+      if (trendModels.customField2) {
+        rtn += `<input type="hidden" name="CustomField2" value="${trendModels.customField2}"\/>`;
+      }
+
+      if (trendModels.customField3) {
+        rtn += `<input type="hidden" name="CustomField3" value="${trendModels.customField3}"\/>`;
+      }
+
+      if (trendModels.customField4) {
+        rtn += `<input type="hidden" name="CustomField4" value="${trendModels.customField4}"\/>`;
+      }
+
+      if (trendModels.language) {
+        rtn += `<input type="hidden" name="Language" value="${trendModels.language}"\/>`;
+      }
+
+      if (trendModels.unionPay) {
+        rtn += `<input type="hidden" name="UnionPay" value="${trendModels.unionPay}"\/>`;
+      }
+
+      rtn += `</form>`;
+      rtn += `<script>document.getElementById("payment").submit()<\/script>`;
+      return rtn;
     },
 
     /*================================== 棄用但供參考函式  =================================== */
