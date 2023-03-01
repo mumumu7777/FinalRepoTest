@@ -38,6 +38,11 @@ const options = {
     cancelButtonColor: '#ff7674',
 };
 
+//地址組件
+import '@andy922200/vue-tw-zip-code-selector/dist/vue-tw-zip-code-selector.css';
+import VueTwZipCodeSelector from '@andy922200/vue-tw-zip-code-selector'
+
+
 const app = createApp(App)
 app
     .component('font-awesome-icon', FontAwesomeIcon)
@@ -46,5 +51,6 @@ app
     .component('ShoppingCart', ShoppingCart)
     .use(VueSweetalert2, options)
     .use(router).mount('#app')
+    .use(VueTwZipCodeSelector)
 axios.defaults.baseURL = process.env.VUE_APP_API
 app.config.globalProperties.$axios = axios;
