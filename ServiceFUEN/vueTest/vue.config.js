@@ -1,10 +1,10 @@
 const path = require('path')
 module.exports = {
-  outputDir: "../wwwroot",
+  outputDir: "../wwwroot", // npm run build 檔案放的位置,預設是dist資料夾
   configureWebpack: {
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, 'src')
+        '@': path.resolve(__dirname, 'src')// 指定@=src這層目錄
       }
     }
   },

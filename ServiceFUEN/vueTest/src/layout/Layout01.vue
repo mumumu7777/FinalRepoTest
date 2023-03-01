@@ -2,16 +2,18 @@
   <div class="container-fluid layout01 px-0">
     <div class="header w-100">網頁Header</div>
     <!-- 
-      slot 要放進去的插槽 包在組件中 
-      必須指定name Ex:
-      <Layout01>
+      slot=插槽, 組件=插卡,相同"名稱"的插槽可放入同名插卡, 如網頁內容等等,名稱可自定義
+      可參考Homepage.vue用法
+      EX:
+      <Layout01>-------------components
+
         <template #contents>
           .....頁面內容
         </template> 
+
       </Layout01>
     -->
     <slot class="body w-100" name="contents"></slot>
-    
 
     <div class="footer w-100">網頁Footer</div>
   </div>

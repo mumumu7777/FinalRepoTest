@@ -30,7 +30,7 @@ import 'vue-loading-overlay/dist/css/index.css';
 // 網頁模板
 import Layout01 from "@/layout/Layout01.vue";
 
-// 購物車組件
+// 購物車組件 REF:
 import ShoppingCart from "@/components/ShoppingCart.vue";
 
 const options = {

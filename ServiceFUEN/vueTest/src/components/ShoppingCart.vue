@@ -1,15 +1,6 @@
 <template>
   <div
-    class="
-      row
-      d-flex
-      justify-content-center
-      align-items-center
-      h-100
-      w-75
-      mt-5
-      mx-auto
-    "
+    class="row d-flex justify-content-center align-items-center h-100 w-75 mt-5 mx-auto"
   >
     <div class="col-10">
       <div class="d-flex justify-content-between align-items-center mb-4">

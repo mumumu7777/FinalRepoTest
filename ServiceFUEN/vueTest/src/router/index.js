@@ -1,8 +1,10 @@
+//index.js => 設定組件與網址導頁行為!
 import { createRouter, createWebHistory, scrollBehavior } from "vue-router";
 import axios from 'axios';
 import Homepage from "@/views/Homepage.vue";
 import CheckOutReport from "@/views/CheckOutReport.vue";
 import NotFound from "@/views/NotFound.vue";
+
 
 axios.defaults.baseURL = process.env.VUE_APP_API
 const routes = [
@@ -44,7 +46,7 @@ router.afterEach((to, from) => {
     document.documentElement.scrollTop = 0
   }
 })
-
+//進入導頁前的行為
 // router.beforeEach((to, from, next) => {
 //   let token = _global.token;
 //   if (!token) {
