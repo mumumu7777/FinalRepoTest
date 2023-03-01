@@ -50,7 +50,7 @@ app
     .component('Layout01', Layout01)
     .component('ShoppingCart', ShoppingCart)
     .use(VueSweetalert2, options)
-    .use(router).mount('#app')
     .use(VueTwZipCodeSelector)
+    .use(router).mount('#app')
 axios.defaults.baseURL = process.env.VUE_APP_API
 app.config.globalProperties.$axios = axios;
