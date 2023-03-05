@@ -36,8 +36,16 @@
         <font-awesome-icon icon="fa-solid fa-user-secret" /> -->
         <router-link :to="notFoundLink">購物車</router-link>
       </div>
+      <div class="input-group mb-3 form-inline">
+        <VueTwZipCodeSelector @getSelectedZone="getSelectedZone" />
+        <input
+          v-model="adressinput"
+          type="text"
+          class="form-control"
+          @blur="getAdressInput"
+        />
+      </div>
 
-      <VueTwZipCodeSelector @getSelectedZone="getSelectedZone" />
       <loading :active="loading"></loading>
     </template>
   </Layout01>
@@ -59,6 +67,7 @@ export default {
       // vue loading
       loading: false,
       adressval: null,
+      adressinput: "",
     };
   },
   //search vue life cycle
@@ -119,6 +128,10 @@ export default {
     async getSelectedZone(selc) {
       this.adressval = JSON.parse(JSON.stringify(selc.value));
       console.log(this.adressval);
+    },
+
+    async getAdressInput() {
+      console.log(this.adressinput);
     },
   },
   //個別引入component(.vue)必須放這

@@ -61,6 +61,35 @@ namespace ServiceFUEN.Controllers
 #endif
         }
 
+        //discount
+
+        [HttpGet("CatchCoupon")]
+        [AllowAnonymous]
+        public async Task<IActionResult> CatchCoupon(string CouponCode)
+        {
+            ReturnVM rtn = new ReturnVM();
+
+
+            var selectedCoup = _context.Coupons.Where(x => x.Code == CouponCode).FirstOrDefault();
+
+            if(selectedCoup == null || selectedCoup.Count == 0)
+            {
+                rtn.Messsage = "無效折價券";
+                rtn.Code = (int)RetunCode.呼叫失敗;
+                return BadRequest(rtn);
+            }
+
+  
+            rtn.Code = (int)RetunCode.呼叫成功;
+            rtn.Messsage = "成功取得折價券";
+            rtn.Data = selectedCoup;
+
+
+            return Ok(rtn);
+
+
+
+        }
 
         //抓商品
         [HttpGet("GetProducts")]
@@ -148,6 +177,7 @@ namespace ServiceFUEN.Controllers
                     {
                         rtn.Code = (int)RetunCode.呼叫失敗;
                         rtn.Messsage = "未成功儲存訂單";
+                        transaction.Rollback();
                         return BadRequest(rtn);
                     }
 
@@ -172,7 +202,12 @@ namespace ServiceFUEN.Controllers
                             ProductNumber = item.Qty
                         });
 
-                    }
+                    } 
+
+                    int toatal = orderItemList.Sum(a => a.ProductPrice * a.ProductNumber);
+                    // 折價券最低消費 ........
+
+                    // if 有折...  => 防呆 => 正確 => toatal*乘數
 
                     _context.OrderItems.AddRange(orderItemList);
                     _context.SaveChanges();
@@ -242,7 +277,7 @@ namespace ServiceFUEN.Controllers
                             method: payInfo.Method)
                         .Transaction.WithItems( // 這邊加入算好折扣的金額amount 如果是null(預設)系統會用原價
                             items: payInfo.Items,
-                            amount: null)
+                            amount: toatal)
                         .Generate();
 
                     transaction.Commit();

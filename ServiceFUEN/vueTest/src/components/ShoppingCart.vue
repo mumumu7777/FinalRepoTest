@@ -87,12 +87,18 @@
 
       <div class="card">
         <div class="card-body">
+          <span
+            class="btn btn-lg d-inline-block float-start"
+            style="pointer-events: none"
+          >
+            總金額: {{ this.getTotal }}
+          </span>
           <button
             type="button"
-            class="btn btn-warning btn-block btn-lg pointer"
+            class="btn btn-warning btn-block btn-lg pointer float-end"
             @click.stop="cartSubmit"
           >
-            Proceed to Pay
+            購買
           </button>
         </div>
       </div>
@@ -171,6 +177,20 @@ export default {
   // 已經有html了
   mounted() {
     this.getStorageCart();
+  },
+  // 如果有反覆計算 不含複雜邏輯的地方 用computed效能比較高
+  computed: {
+    getTotal() {
+      if (this.cartsSelect.length > 0) {
+        let totalCount = this.cartsSelect
+          .map((a) => a.Price * a.Qty) // 得到 price * qty 陣列 [100*2, 2000*5, 500 * 6]
+          .reduce((a, b) => a + b); // 做累加 a累加值 b 下一個要累加的數 [200, 10000, 3000] => 200 + 10000 +300
+
+        //if 有折價券 => totalCount*乘數
+
+        return totalCount;
+      }
+    },
   },
   methods: {
     /*================================== 公用函式  =================================== */
