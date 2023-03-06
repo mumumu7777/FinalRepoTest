@@ -57,7 +57,7 @@
 
                     <td>
                       <div class="d-flex align-items-center">
-                        <span class="pe-3 text-muted">數量</span>
+                        <span class="pe-2 text-muted">數量</span>
 
                         <button class="btn btn-link px-2 pointer">
                           <font-awesome-icon
@@ -70,7 +70,7 @@
 
                         <span class="pe-3">
                           <input
-                            class="form-control form-control-sm ps-2"
+                            class="qtyinput text-center"
                             :class="`count-input-${i}`"
                             min="0"
                             default="1"
@@ -88,6 +88,15 @@
                             "
                           />
                         </button>
+
+                        <div class="ms-4 pointer">
+                          <a
+                            class="text-dark"
+                            @click.stop="removeCartItem(item)"
+                          >
+                            <font-awesome-icon icon="fas fa-trash" />
+                          </a>
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -109,21 +118,21 @@
             <p class="">VC115665</p>
           </div>
           <div class="d-flex justify-content-between b-bottom">
-            <input type="text" class="ps-2" placeholder="COUPON CODE" />
-            <div class="btn btn-primary">Apply</div>
+            <input @blur="getCoupon"  type="text" class="ps-2" placeholder="折價券代碼" />
+            </div>
           </div>
           <div class="d-flex flex-column b-bottom">
             <div class="d-flex justify-content-between py-3">
-              <small class="text-muted">Order Summary</small>
+              <small class="text-muted">折價券折扣</small>
               <p>$122</p>
             </div>
             <div class="d-flex justify-content-between pb-3">
-              <small class="text-muted">Additional Service</small>
+              <small class="text-muted">以折扣金額</small>
               <p>$22</p>
             </div>
             <div class="d-flex justify-content-between">
-              <small class="text-muted">Total Amount</small>
-              <p>$132</p>
+              <small class="text-muted">總金額</small>
+              <p>${{ this.getTotal }}</p>
             </div>
           </div>
           <div class="sale my-3">
@@ -150,6 +159,9 @@ export default {
       cartsSelect: [],
       searchText: "",
       paymentForm: "",
+      adressval: null,
+      adressinput: "",
+      couponinput: "",
       // vue loading
       loading: false,
 
@@ -239,8 +251,17 @@ export default {
     goNotFound() {
       this.toNotFound();
     },
+    async getAdressInput() {
+      return this.adressinput;
+    },
 
     /*================================== 購物車行為及api  =================================== */
+
+    //呼叫折價券api
+    getCoupon() {
+      let couponinput = this.couponinput;
+      $axios;
+    },
 
     // 從Storage取使用者購物車紀錄
     getStorageCart() {
@@ -366,6 +387,13 @@ export default {
             MemberId: 1,
             State: 0,
             CartProducts: Array.from(this.cartsSelect),
+            Adress: {
+              Name: this.adressval.name,
+              ZipCode: this.adressval.zipCode,
+              County: this.adressval.county,
+              CountyName: this.adressval.countyName,
+              InputRegion: this.adressval.adressinput,
+            },
           };
 
           this.loading = true;
@@ -617,8 +645,9 @@ p {
   margin: 0px;
 }
 table input {
-  width: 40px;
-  border: 1px solid #eee;
+  width: 50px;
+  border: 1px solid #66b3ff;
+  border-radius: 0.25rem;
 }
 input:focus {
   border: 1px solid #eee;

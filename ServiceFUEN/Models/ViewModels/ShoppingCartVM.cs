@@ -7,7 +7,7 @@ namespace ServiceFUEN.Models.ViewModels
         public int MemberId { get; set; }
         public int State { get; set; }
         public string CouponCode { get; set; }
-
+        public Adress Adress { get; set; }
         public CartProduct[] CartProducts { get; set; }
     }
 
@@ -17,4 +17,17 @@ namespace ServiceFUEN.Models.ViewModels
         public int Qty { get; set; }
         public string Name { get; set; }
     }
+
+    public class Adress
+    {
+        public string Name { get; set; }
+        public string ZipCode { get; set; }
+        public string County { get; set; }
+        public string CountyName { get; set; }
+        public string InputRegion { get; set; }
+    }
+
+
+
+
 }
