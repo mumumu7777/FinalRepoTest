@@ -1,15 +1,13 @@
 <template>
   <div class="container mt-4 p-0">
-    
     <div class="row px-md-4 px-2 pt-4">
       <div class="col-lg-8">
         <p class="pb-2 fw-bold">Order</p>
-        <div class="card">     
+        <div class="card">
           <div>
             <div class="table-responsive px-md-4 px-2 pt-3">
               <table class="table table-borderless">
-                <tbody>                 
-                  
+                <tbody>
                   <tr class="">
                     <td>
                       <div class="d-flex align-items-center">
@@ -25,11 +23,10 @@
                             Sportswear<span class="ps-1">Heritage</span
                             ><span class="ps-1">Windrunner</span>
                           </p>
-                          
                         </div>
                       </div>
                     </td>
-                 
+
                     <td>
                       <div class="d-flex align-items-center">
                         <span class="pe-3 text-muted">數量</span>
@@ -40,10 +37,8 @@
                     </td>
                   </tr>
 
-
-<!-- testtttt -->
-                  <tr class="" v-for="(item, i) in cartsSelect"
-            :key="item.Id" >
+                  <!-- testtttt -->
+                  <tr class="" v-for="(item, i) in cartsSelect" :key="item.Id">
                     <td>
                       <div class="d-flex align-items-center">
                         <div>
@@ -56,51 +51,48 @@
                         <div class="ps-3 d-flex flex-column">
                           <p class="fw-bold ps-1">
                             {{ item.Name }}
-                          </p>               
+                          </p>
                         </div>
                       </div>
                     </td>
-                
+
                     <td>
                       <div class="d-flex align-items-center">
                         <span class="pe-3 text-muted">數量</span>
 
                         <button class="btn btn-link px-2 pointer">
-                <font-awesome-icon
-                  icon="fas fa-minus"
-                  @click.stop="addToCart(item, 1, `.count-input-${i}`)"
-                />
-              </button>
-                        
-
+                          <font-awesome-icon
+                            icon="fas fa-minus"
+                            @click.stop="
+                              addToCart(item, 1, `.count-input-${i}`)
+                            "
+                          />
+                        </button>
 
                         <span class="pe-3">
                           <input
-                class="form-control form-control-sm ps-2"
-                :class="`count-input-${i}`"
-                min="0"
-                default="1"
-                v-model="item.Qty"
-                type="number"
-                @blur.stop="addToCart(item, 2, `.count-input-${i}`)"
-              />  
-            </span>
+                            class="form-control form-control-sm ps-2"
+                            :class="`count-input-${i}`"
+                            min="0"
+                            default="1"
+                            v-model="item.Qty"
+                            type="number"
+                            @blur.stop="addToCart(item, 2, `.count-input-${i}`)"
+                          />
+                        </span>
 
-
-            <button class="btn btn-link px-2 pointer">
-                <font-awesome-icon
-                  icon="fas fa-plus"
-                  @click.stop="addToCart(item, 0, `.count-input-${i}`)"
-                />
-              </button>
-
+                        <button class="btn btn-link px-2 pointer">
+                          <font-awesome-icon
+                            icon="fas fa-plus"
+                            @click.stop="
+                              addToCart(item, 0, `.count-input-${i}`)
+                            "
+                          />
+                        </button>
                       </div>
                     </td>
                   </tr>
-<!-- testtttt -->
-
-
-
+                  <!-- testtttt -->
                 </tbody>
               </table>
             </div>
@@ -108,7 +100,7 @@
         </div>
       </div>
       <div class="col-lg-4 payment-summary">
-        <p class="fw-bold pt-lg-0 pt-4 pb-2 ">購買資訊</p>
+        <p class="fw-bold pt-lg-0 pt-4 pb-2">購買資訊</p>
         <div class="card px-md-3 px-2 pt-4">
           <div class="unregistered mb-4">
             <span class="py-1">unregistered account</span>
@@ -145,8 +137,6 @@
           </div>
         </div>
       </div>
-      
-     
     </div>
   </div>
 </template>
@@ -673,5 +663,10 @@ input:focus {
 
 .delivery .card {
   padding: 10px 5px;
+}
+
+.table-borderless {
+  overflow: auto !important;
+  max-height: 10%;
 }
 </style>

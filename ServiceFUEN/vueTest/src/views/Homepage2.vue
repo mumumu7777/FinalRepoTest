@@ -2,7 +2,7 @@
   <Layout01
     ><!-- 外觀插槽(模板)  -->
     <template #contents>
-      <!--引入ShoppingCart組件,  -->     
+      <!--引入ShoppingCart組件,  -->
       <CashView ref="CashView"></CashView>
       <div class="row mx-auto">
         <div class="text-center" :class="customClass()">商品:</div>
@@ -123,7 +123,7 @@ export default {
 
     async addToCart(item, mode) {
       // 呼叫子組件函式
-      this.$refs.shoppingCart.addToCart(item, mode);
+      this.$refs.CashView.addToCart(item, mode);
     },
 
     async getSelectedZone(selc) {
@@ -136,8 +136,7 @@ export default {
     },
   },
   //個別引入component(.vue)必須放這
-  components: {
-},
+  components: {},
 };
 </script>
 <!-- scoped 限定頁面生效 參考 main.css -->
