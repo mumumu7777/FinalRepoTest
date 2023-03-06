@@ -4,14 +4,15 @@ import axios from 'axios';
 import Homepage from "@/views/Homepage.vue";
 import CheckOutReport from "@/views/CheckOutReport.vue";
 import NotFound from "@/views/NotFound.vue";
-import CashView from "@/views/CashView.vue";
+import Homepage2 from "@/views/Homepage2.vue";
+
 
 axios.defaults.baseURL = process.env.VUE_APP_API
 const routes = [
   {
     path: "/",
     // 重定向
-    redirect: "/CashView",
+    redirect: "/Homepage2",
   },
   {
     path: "/homepage",
@@ -24,9 +25,9 @@ const routes = [
     name: 'checkoutreport',
   },
   {
-    path: "/CashView",
-    component: CashView,
-    name: 'CashView',
+    path: "/Homepage2",
+    component: Homepage2,
+    name: 'Homepage2',
   },
 
   {

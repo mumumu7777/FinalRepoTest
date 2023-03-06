@@ -32,6 +32,7 @@ import Layout01 from "@/layout/Layout01.vue";
 
 // 購物車組件 REF:
 import ShoppingCart from "@/components/ShoppingCart.vue";
+import CashView from"@/components/CashView.vue";
 
 const options = {
     confirmButtonColor: '#41b882',
@@ -49,6 +50,7 @@ app
     .component('Loading', Loading)
     .component('Layout01', Layout01)
     .component('ShoppingCart', ShoppingCart)
+    .component('CashView',CashView)
     .use(VueSweetalert2, options)
     .use(VueTwZipCodeSelector)
     .use(router).mount('#app')

@@ -214,13 +214,13 @@ namespace ServiceFUEN.Controllers
                         return BadRequest(rtn);
                     }
 
-                    // if 有折...  => 防呆 => 正確 => toatal*乘數
-                    if (UsingCoupon.Discount > 1)
-                    { 
-
-                    }
-
-                    toatal = (UsingCoupon.Discount > 1) ? toatal - UsingCoupon.Discount : toatal * UsingCoupon.Discount;
+                    // if 有折...  => 防呆 => 正確 => toatal*乘數                 
+                    //int to decimal
+                    var deTotal = Convert.ToDecimal(toatal);
+                    //折價大於一減多少錢,小於一用乘的打折
+					deTotal = (UsingCoupon.Discount > 1) ? toatal - UsingCoupon.Discount : toatal * UsingCoupon.Discount;
+                    int FinalTotal = Convert.ToInt32(deTotal);
+                    //把finaltotal存入主檔
 
 
 
@@ -292,7 +292,7 @@ namespace ServiceFUEN.Controllers
                             method: payInfo.Method)
                         .Transaction.WithItems( // 這邊加入算好折扣的金額amount 如果是null(預設)系統會用原價
                             items: payInfo.Items,
-                            amount: toatal)
+                            amount: FinalTotal)
                         .Generate();
 
                     transaction.Commit();
