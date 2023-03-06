@@ -6,6 +6,8 @@ namespace ServiceFUEN.Models.ViewModels
     {
         public int MemberId { get; set; }
         public int State { get; set; }
+        public string CouponCode { get; set; }
+
         public CartProduct[] CartProducts { get; set; }
     }
 

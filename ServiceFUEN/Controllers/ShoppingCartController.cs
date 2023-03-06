@@ -62,7 +62,7 @@ namespace ServiceFUEN.Controllers
         }
 
         //discount
-
+        //加入以使用折價
         [HttpGet("CatchCoupon")]
         [AllowAnonymous]
         public async Task<IActionResult> CatchCoupon(string CouponCode)
@@ -72,22 +72,19 @@ namespace ServiceFUEN.Controllers
 
             var selectedCoup = _context.Coupons.Where(x => x.Code == CouponCode).FirstOrDefault();
 
-            if(selectedCoup == null || selectedCoup.Count == 0)
+            if (selectedCoup == null || selectedCoup.Count == 0)
             {
                 rtn.Messsage = "無效折價券";
                 rtn.Code = (int)RetunCode.呼叫失敗;
                 return BadRequest(rtn);
             }
 
-  
+
             rtn.Code = (int)RetunCode.呼叫成功;
-            rtn.Messsage = "成功取得折價券";
+            rtn.Messsage = "成功使用折價券";
             rtn.Data = selectedCoup;
 
-
             return Ok(rtn);
-
-
 
         }
 
@@ -202,23 +199,41 @@ namespace ServiceFUEN.Controllers
                             ProductNumber = item.Qty
                         });
 
-                    } 
+                    }
 
+                    //總金額
                     int toatal = orderItemList.Sum(a => a.ProductPrice * a.ProductNumber);
+                    //使用的折價卷
+                    var UsingCoupon = _context.Coupons.Where(x => x.Code == shoppingCartVM.CouponCode).FirstOrDefault();
+
                     // 折價券最低消費 ........
+                    if (UsingCoupon.LeastCost > toatal)
+                    {
+                        rtn.Code = (int)RetunCode.呼叫失敗;
+                        rtn.Messsage = "總金額低於折價券最低消費金額";
+                        return BadRequest(rtn);
+                    }
 
                     // if 有折...  => 防呆 => 正確 => toatal*乘數
+                    if (UsingCoupon.Discount > 1)
+                    { 
+
+                    }
+
+                    toatal = (UsingCoupon.Discount > 1) ? toatal - UsingCoupon.Discount : toatal * UsingCoupon.Discount;
+
+
 
                     _context.OrderItems.AddRange(orderItemList);
                     _context.SaveChanges();
 
                     // 抓出已儲存訂單明細檔
-                    var orderItemSaved = _context.OrderItems.Where(a =>a.OrderId == orderDetailSaved.Id).ToList();
+                    var orderItemSaved = _context.OrderItems.Where(a => a.OrderId == orderDetailSaved.Id).ToList();
 
                     // 將商品存入付款資訊
                     List<Item> payItems = new List<Item>();
 
-                    foreach(var item in orderItemSaved)
+                    foreach (var item in orderItemSaved)
                     {
                         payItems.Add(new Item
                         {
