@@ -4,7 +4,7 @@
       <div class="col-lg-8">
         <p class="pb-2 fw-bold">Order</p>
         <div class="card">
-          <div>
+          <div class="card-scroll-x">
             <div class="table-responsive px-md-4 px-2 pt-3">
               <table class="table table-borderless">
                 <tbody>
@@ -36,7 +36,6 @@
                       </div>
                     </td>
                   </tr>
-
                   <!-- testtttt -->
                   <tr class="" v-for="(item, i) in cartsSelect" :key="item.Id">
                     <td>
@@ -665,8 +664,16 @@ input:focus {
   padding: 10px 5px;
 }
 
-.table-borderless {
-  overflow: auto !important;
-  max-height: 10%;
+/* 自己設最小高度 */
+.card-scroll-x {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+@media screen and (max-width: 576px) {
+  .card-scroll-x {
+    max-height: none;
+    overflow-y: auto;
+  }
 }
 </style>
