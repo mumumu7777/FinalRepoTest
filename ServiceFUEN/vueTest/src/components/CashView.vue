@@ -118,31 +118,36 @@
             <p class="">VC115665</p>
           </div>
           <div class="d-flex justify-content-between b-bottom">
-            <input @blur="getCoupon"  type="text" class="ps-2" placeholder="折價券代碼" />
-            </div>
+            <input
+              @blur="getCoupon"
+              v-model="couponinput"
+              type="text"
+              class="ps-2"
+              placeholder="折價券代碼"
+            />
           </div>
-          <div class="d-flex flex-column b-bottom">
-            <div class="d-flex justify-content-between py-3">
-              <small class="text-muted">折價券折扣</small>
-              <p>$122</p>
-            </div>
-            <div class="d-flex justify-content-between pb-3">
-              <small class="text-muted">以折扣金額</small>
-              <p>$22</p>
-            </div>
-            <div class="d-flex justify-content-between">
-              <small class="text-muted">總金額</small>
-              <p>${{ this.getTotal }}</p>
-            </div>
+        </div>
+        <div class="d-flex flex-column b-bottom">
+          <div class="d-flex justify-content-between py-3">
+            <small class="text-muted">折價券折扣</small>
+            <p>$122</p>
           </div>
-          <div class="sale my-3">
-            <span>sale<span class="px-1">expiring</span><span>in</span>:</span
-            ><span class="red"
-              >21<span class="ps-1">hours</span>,31<span class="ps-1"
-                >minutes</span
-              ></span
-            >
+          <div class="d-flex justify-content-between pb-3">
+            <small class="text-muted">以折扣金額</small>
+            <p>$22</p>
           </div>
+          <div class="d-flex justify-content-between">
+            <small class="text-muted">總金額</small>
+            <p>${{ this.getTotal }}</p>
+          </div>
+        </div>
+        <div class="sale my-3">
+          <span>sale<span class="px-1">expiring</span><span>in</span>:</span
+          ><span class="red"
+            >21<span class="ps-1">hours</span>,31<span class="ps-1"
+              >minutes</span
+            ></span
+          >
         </div>
       </div>
     </div>
@@ -259,8 +264,18 @@ export default {
 
     //呼叫折價券api
     getCoupon() {
-      let couponinput = this.couponinput;
-      $axios;
+      let apiCoupon = this.couponinput;
+      this.$axios
+        .get(`api/ShoppingCart/CatchCoupon`, apiCoupon)
+        .then((res) => {
+          if (res.status == 204 || res.status == 200) {
+            //成功呼叫
+            //有折價券做事
+
+            console.log("呼叫成功");
+          }
+        })
+        .catch();
     },
 
     // 從Storage取使用者購物車紀錄
