@@ -71,6 +71,7 @@ namespace ServiceFUEN.Controllers
 
 
             var selectedCoup = _context.Coupons.Where(x => x.Code == CouponCode).FirstOrDefault();
+           
 
             if (selectedCoup == null || selectedCoup.Count == 0)
             {
@@ -78,8 +79,10 @@ namespace ServiceFUEN.Controllers
                 rtn.Code = (int)RetunCode.呼叫失敗;
                 return BadRequest(rtn);
             }
-
-
+            
+            //do or not 驗證是否用過
+            
+         
             rtn.Code = (int)RetunCode.呼叫成功;
             rtn.Messsage = "成功使用折價券";
             rtn.Data = selectedCoup;

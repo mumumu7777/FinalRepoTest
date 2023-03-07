@@ -114,13 +114,12 @@
             <span class="py-1">unregistered account</span>
           </div>
           <div class="d-flex justify-content-between pb-3">
-            <small class="text-muted">Transaction code</small>
-            <p class="">VC115665</p>
+            <small class="text-muted">{{ couponmessage }}</small>
           </div>
           <div class="d-flex justify-content-between b-bottom">
             <input
-              @blur="getCoupon"
               v-model="couponinput"
+              @blur.stop="getCoupon"
               type="text"
               class="ps-2"
               placeholder="折價券代碼"
@@ -167,6 +166,9 @@ export default {
       adressval: null,
       adressinput: "",
       couponinput: "",
+      couponmessage: "",
+      couponshowdisco: "",
+      coupondiscountdata: "",
       // vue loading
       loading: false,
 
@@ -234,7 +236,20 @@ export default {
           .map((a) => a.Price * a.Qty) // 得到 price * qty 陣列 [100*2, 2000*5, 500 * 6]
           .reduce((a, b) => a + b); // 做累加 a累加值 b 下一個要累加的數 [200, 10000, 3000] => 200 + 10000 +300
 
-        //if 有折價券 => totalCount*乘數
+        if (!this.coupondiscountdata) {
+          totalCount = totalCount;
+        }
+
+        if (this.coupondiscountdata > 0) {
+          totalCount = totalCount - parseInt(this.coupondiscountdata);
+        }
+
+        //要to float小數
+        if (parseFloat(this.coupondiscountdata) < 0) {
+          totalCount = parseInt(
+            parseFloat(totalCount) * parseFloat(this.coupondiscountdata)
+          );
+        }
 
         return totalCount;
       }
@@ -256,26 +271,27 @@ export default {
     goNotFound() {
       this.toNotFound();
     },
-    async getAdressInput() {
-      return this.adressinput;
-    },
 
     /*================================== 購物車行為及api  =================================== */
 
     //呼叫折價券api
     getCoupon() {
-      let apiCoupon = this.couponinput;
       this.$axios
-        .get(`api/ShoppingCart/CatchCoupon`, apiCoupon)
+        .get(`api/ShoppingCart/CatchCoupon?CouponCode=${this.couponinput}`)
         .then((res) => {
           if (res.status == 204 || res.status == 200) {
-            //成功呼叫
-            //有折價券做事
+            //折扣數
+            let coupondiscount = JSON.parse(res.data.data.discount);
+            this.coupondiscountdata = coupondiscount;
+            this.couponmessage = res.data.messsage;
 
-            console.log("呼叫成功");
+            //顯示折扣數
           }
         })
-        .catch();
+        .catch((err) => {
+          this.couponmessage = err.response.data.messsage;
+          this.coupondiscountdata = "";
+        });
     },
 
     // 從Storage取使用者購物車紀錄
