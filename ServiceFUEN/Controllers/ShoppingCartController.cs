@@ -159,6 +159,11 @@ namespace ServiceFUEN.Controllers
                         OrderDate = DateTime.UtcNow.AddHours(08),
                         Address = member.Address,
                         State = shoppingCartVM.State,
+                        UsedCoupon=shoppingCartVM.CouponData.UsedCouponID,
+                        PaymentId="FEWFDASFG",
+                        Total= shoppingCartVM.Total,
+
+
                     };
 
                     _context.OrderDetails.Add(orderDetail);
@@ -192,7 +197,7 @@ namespace ServiceFUEN.Controllers
                             return BadRequest(rtn);
                         }
 
-                        // 找到商品加入訂單明細檔
+                        // 找到商品加入訂單明細檔--
                         orderItemList.Add(new OrderItem
                         {
                             OrderId = orderDetailSaved.Id,
@@ -204,10 +209,10 @@ namespace ServiceFUEN.Controllers
 
                     }
 
-                    //總金額
+                    //總金額 //原始金額
                     int toatal = orderItemList.Sum(a => a.ProductPrice * a.ProductNumber);
                     //使用的折價卷
-                    var UsingCoupon = _context.Coupons.Where(x => x.Code == shoppingCartVM.CouponCode).FirstOrDefault();
+                    var UsingCoupon = _context.Coupons.Where(x => x.Code == shoppingCartVM.CouponData.CouponCode).FirstOrDefault();
 
                     // 折價券最低消費 ........
                     if (UsingCoupon.LeastCost > toatal)
@@ -217,17 +222,38 @@ namespace ServiceFUEN.Controllers
                         return BadRequest(rtn);
                     }
 
-                    // if 有折...  => 防呆 => 正確 => toatal*乘數                 
-                    //int to decimal
-                    var deTotal = Convert.ToDecimal(toatal);
-                    //折價大於一減多少錢,小於一用乘的打折
-					deTotal = (UsingCoupon.Discount > 1) ? toatal - UsingCoupon.Discount : toatal * UsingCoupon.Discount;
-                    int FinalTotal = Convert.ToInt32(deTotal);
-                    //把finaltotal存入主檔
+                    // if 有折...  => 防呆 => 正確 => toatal*乘數
+                    if (shoppingCartVM.CouponData.UsedCouponID != null )
+                    {
+                        try {
+                            //驗證前端折價券金額是否異常,如果正常就扣錢
+                            if (UsingCoupon.Discount== shoppingCartVM.CouponData.Discount)
+                            {                                                 
+                                //折價大於一減多少錢,小於一用乘的打折 //int to decimai 
+                                toatal = (UsingCoupon.Discount > 1) ? toatal - Convert.ToInt32(UsingCoupon.Discount) : Convert.ToInt32(Convert.ToDecimal(toatal) * UsingCoupon.Discount);                                                                                          
+                            }
 
+                        } 
+                        catch {
+                            rtn.Code = (int)RetunCode.呼叫失敗;
+                            rtn.Messsage = "折價券金額異常";
+                            transaction.Rollback();
+                            return BadRequest(rtn);
 
+                        };
+                      
+                    }
 
-                    _context.OrderItems.AddRange(orderItemList);
+                    //驗證折扣後金額是否正確
+                    if (toatal != shoppingCartVM.Total) {
+                        rtn.Code = (int)RetunCode.呼叫失敗;
+                        rtn.Messsage = "金額異常";
+                        transaction.Rollback();
+                        return BadRequest(rtn);
+
+                    }
+                                                 
+                      _context.OrderItems.AddRange(orderItemList);
                     _context.SaveChanges();
 
                     // 抓出已儲存訂單明細檔
@@ -295,7 +321,7 @@ namespace ServiceFUEN.Controllers
                             method: payInfo.Method)
                         .Transaction.WithItems( // 這邊加入算好折扣的金額amount 如果是null(預設)系統會用原價
                             items: payInfo.Items,
-                            amount: FinalTotal)
+                            amount: toatal)
                         .Generate();
 
                     transaction.Commit();

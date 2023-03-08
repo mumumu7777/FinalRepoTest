@@ -72,10 +72,8 @@
                           <input
                             class="qtyinput text-center"
                             :class="`count-input-${i}`"
-                            min="0"
-                            default="1"
                             v-model="item.Qty"
-                            type="number"
+                            type="input"
                             @blur.stop="addToCart(item, 2, `.count-input-${i}`)"
                           />
                         </span>
@@ -112,9 +110,10 @@
         <div class="card px-md-3 px-2 pt-4">
           <div class="unregistered mb-4">
             <span class="py-1"
-              >地址:<VueTwZipCodeSelector
+              ><span>地址:</span>
+              <VueTwZipCodeSelector
                 @getSelectedZone="getSelectedZone"
-                class="ms-3" /><input
+                class="address-coustomize ms-3" /><input
                 v-model="adressinput"
                 type="text"
                 class="form-control"
@@ -148,13 +147,16 @@
             <p>${{ this.getTotal }}</p>
           </div>
         </div>
-        <div class="sale my-3">
-          <span>sale<span class="px-1">expiring</span><span>in</span>:</span
-          ><span class="red"
-            >21<span class="ps-1">hours</span>,31<span class="ps-1"
-              >minutes</span
-            ></span
-          >
+        <div class="my-3">
+          <span>
+            <button
+              type="button"
+              class="btn btn-lg btn-block btn-success p-1 col-12"
+              @click.stop="cartSubmit"
+            >
+              <p class="btntext">購買</p>
+            </button>
+          </span>
         </div>
       </div>
     </div>
@@ -173,13 +175,13 @@ export default {
       paymentForm: "",
       adressval: null,
       adressinput: "",
+      //折價券資料
       couponinput: "",
       couponmessage: "",
-      couponshowdisco: "",
       coupondiscountdata: "",
+      couponID: null,
       // vue loading
       loading: false,
-
       // sweet alert訊息
       delSweetConfirm: {
         title: "要刪除此項目嗎",
@@ -248,7 +250,7 @@ export default {
           if (this.coupondiscountdata > 1) {
             totalCount = totalCount - parseInt(this.coupondiscountdata);
           } else {
-            totalCount = totalCount * this.coupondiscountdata;
+            totalCount = parseInt(totalCount * this.coupondiscountdata);
           }
         }
 
@@ -300,8 +302,8 @@ export default {
               //折扣數
               this.coupondiscountdata = res.data.data.discount;
               this.couponmessage = `<span class="text-success">${res.data.messsage}<\/span>`;
-
-              //顯示折扣數
+              this.couponID = res.data.data.id;
+              // alert(`${this.couponID}`);
             }
           })
           .catch((err) => {
@@ -311,6 +313,7 @@ export default {
           });
       } else {
         this.coupondiscountdata = "";
+        this.couponmessage = "";
       }
     },
 
@@ -437,7 +440,14 @@ export default {
           let model = {
             MemberId: 1,
             State: 0,
+            Total: this.getTotal,
             CartProducts: Array.from(this.cartsSelect),
+            CouponCode: this.couponinput,
+            CouponData: {
+              UsedCouponID: 1,
+              CouponCode: this.couponinput,
+              Discount: this.coupondiscountdata,
+            },
             Adress: {
               Name: this.adressval.name,
               ZipCode: this.adressval.zipCode,
@@ -750,10 +760,22 @@ input:focus {
   overflow-y: auto;
 }
 
+.btntext {
+  font-size: 16px;
+}
+
+/* 更改地址 */
+
 @media screen and (max-width: 576px) {
   .card-scroll-x {
     max-height: none;
     overflow-y: auto;
   }
+}
+</style>
+<style>
+.address-coustomize select {
+  /* display: inline-block; */
+  margin-right: 0.5em;
 }
 </style>
