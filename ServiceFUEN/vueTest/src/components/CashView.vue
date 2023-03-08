@@ -111,7 +111,12 @@
         <p class="fw-bold pt-lg-0 pt-4 pb-2">購買資訊</p>
         <div class="card px-md-3 px-2 pt-4">
           <div class="unregistered mb-4">
-            <span class="py-1">unregistered account</span>
+            <span class="py-1">地址:<VueTwZipCodeSelector @getSelectedZone="getSelectedZone" class="ms-3" /><input
+          v-model="adressinput"
+          type="text"
+          class="form-control"
+          @blur="getAdressInput"
+        /></span>
           </div>
           <div class="d-flex justify-content-between pb-3">
             <small class="text-muted">{{ couponmessage }}</small>
@@ -238,18 +243,17 @@ export default {
 
         if (!this.coupondiscountdata) {
           totalCount = totalCount;
+          
         }
 
-        if (this.coupondiscountdata > 0) {
-          totalCount = totalCount - parseInt(this.coupondiscountdata);
+        if (this.coupondiscountdata > 1 ) {
+           totalCount = totalCount - parseInt(this.coupondiscountdata);
+          totalCount = totalCount * this.coupondiscountdata;  
         }
-
-        //要to float小數
-        if (parseFloat(this.coupondiscountdata) < 0) {
-          totalCount = parseInt(
-            parseFloat(totalCount) * parseFloat(this.coupondiscountdata)
-          );
-        }
+                      
+        if (this.coupondiscountdata < 1 ) {
+             totalCount = totalCount * this.coupondiscountdata;         
+          }
 
         return totalCount;
       }
@@ -273,6 +277,17 @@ export default {
     },
 
     /*================================== 購物車行為及api  =================================== */
+
+    
+//地址行為
+    async getAdressInput() {
+      console.log(this.adressinput);
+    },
+
+    async getSelectedZone(selc) {
+      this.adressval = JSON.parse(JSON.stringify(selc.value));
+      console.log(this.adressval);
+    },
 
     //呼叫折價券api
     getCoupon() {
