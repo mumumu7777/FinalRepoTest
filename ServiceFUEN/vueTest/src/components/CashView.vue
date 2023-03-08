@@ -111,15 +111,18 @@
         <p class="fw-bold pt-lg-0 pt-4 pb-2">購買資訊</p>
         <div class="card px-md-3 px-2 pt-4">
           <div class="unregistered mb-4">
-            <span class="py-1">地址:<VueTwZipCodeSelector @getSelectedZone="getSelectedZone" class="ms-3" /><input
-          v-model="adressinput"
-          type="text"
-          class="form-control"
-          @blur="getAdressInput"
-        /></span>
+            <span class="py-1"
+              >地址:<VueTwZipCodeSelector
+                @getSelectedZone="getSelectedZone"
+                class="ms-3" /><input
+                v-model="adressinput"
+                type="text"
+                class="form-control"
+                @blur="getAdressInput"
+            /></span>
           </div>
           <div class="d-flex justify-content-between pb-3">
-            <small class="text-muted">{{ couponmessage }}</small>
+            <small v-html="couponmessage" class="text-muted"></small>
           </div>
           <div class="d-flex justify-content-between b-bottom">
             <input
@@ -241,19 +244,18 @@ export default {
           .map((a) => a.Price * a.Qty) // 得到 price * qty 陣列 [100*2, 2000*5, 500 * 6]
           .reduce((a, b) => a + b); // 做累加 a累加值 b 下一個要累加的數 [200, 10000, 3000] => 200 + 10000 +300
 
-        if (!this.coupondiscountdata) {
-          totalCount = totalCount;
-          
+        if (this.coupondiscountdata) {
+          if (this.coupondiscountdata > 1) {
+            totalCount = totalCount - parseInt(this.coupondiscountdata);
+          } else {
+            totalCount = totalCount * this.coupondiscountdata;
+          }
         }
 
-        if (this.coupondiscountdata > 1 ) {
-           totalCount = totalCount - parseInt(this.coupondiscountdata);
-          totalCount = totalCount * this.coupondiscountdata;  
-        }
-                      
-        if (this.coupondiscountdata < 1 ) {
-             totalCount = totalCount * this.coupondiscountdata;         
-          }
+        //加這個totalcount會變成零
+        // if (this.coupondiscountdata < 1 ) {
+        //      totalCount = totalCount * this.coupondiscountdata;
+        //   }
 
         return totalCount;
       }
@@ -278,8 +280,7 @@ export default {
 
     /*================================== 購物車行為及api  =================================== */
 
-    
-//地址行為
+    //地址行為
     async getAdressInput() {
       console.log(this.adressinput);
     },
@@ -291,22 +292,26 @@ export default {
 
     //呼叫折價券api
     getCoupon() {
-      this.$axios
-        .get(`api/ShoppingCart/CatchCoupon?CouponCode=${this.couponinput}`)
-        .then((res) => {
-          if (res.status == 204 || res.status == 200) {
-            //折扣數
-            let coupondiscount = JSON.parse(res.data.data.discount);
-            this.coupondiscountdata = coupondiscount;
-            this.couponmessage = res.data.messsage;
+      if (this.couponinput) {
+        this.$axios
+          .get(`api/ShoppingCart/CatchCoupon?CouponCode=${this.couponinput}`)
+          .then((res) => {
+            if (res.status == 204 || res.status == 200) {
+              //折扣數
+              this.coupondiscountdata = res.data.data.discount;
+              this.couponmessage = `<span class="text-success">${res.data.messsage}<\/span>`;
 
-            //顯示折扣數
-          }
-        })
-        .catch((err) => {
-          this.couponmessage = err.response.data.messsage;
-          this.coupondiscountdata = "";
-        });
+              //顯示折扣數
+            }
+          })
+          .catch((err) => {
+            this.couponmessage = `<span class="text-danger">${err.response.data.messsage}<\/span>`;
+            this.coupondiscountdata = "";
+            this.couponinput = "";
+          });
+      } else {
+        this.coupondiscountdata = "";
+      }
     },
 
     // 從Storage取使用者購物車紀錄
