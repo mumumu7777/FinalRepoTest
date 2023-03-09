@@ -9,7 +9,7 @@ namespace ServiceFUEN.Models.ViewModels
         public int Total { get; set; }
         public Adress Adress { get; set; }
         public CartProduct[] CartProducts { get; set; }
-        public CouponData CouponData { get; set; }
+        public CouponData? CouponData { get; set; }
 }
 
     public class CartProduct
@@ -22,10 +22,10 @@ namespace ServiceFUEN.Models.ViewModels
 
     public class CouponData
     {
-        public int UsedCouponID { get; set; }
-        public string CouponCode { get; set; }
+        public int ?UsedCouponID { get; set; }
+        public string? CouponCode { get; set; }
 
-        public decimal Discount { get; set; }
+        public decimal? Discount { get; set; }
     }
 
     public class Adress

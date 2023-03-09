@@ -157,7 +157,7 @@ namespace ServiceFUEN.Controllers
                         MemberId = member.Id,
                         // 因為Azure伺服器在美國 所以要以美國時間 +8hr
                         OrderDate = DateTime.UtcNow.AddHours(08),
-                        Address = member.Address,
+                        Address = shoppingCartVM.Adress.ZipCode+" "+ shoppingCartVM.Adress.CountyName + shoppingCartVM.Adress.Name+ shoppingCartVM.Adress.InputRegion,
                         State = shoppingCartVM.State,
                         UsedCoupon=shoppingCartVM.CouponData.UsedCouponID,
                         PaymentId="FEWFDASFG",
@@ -214,35 +214,42 @@ namespace ServiceFUEN.Controllers
                     //使用的折價卷
                     var UsingCoupon = _context.Coupons.Where(x => x.Code == shoppingCartVM.CouponData.CouponCode).FirstOrDefault();
 
-                    // 折價券最低消費 ........
-                    if (UsingCoupon.LeastCost > toatal)
-                    {
-                        rtn.Code = (int)RetunCode.呼叫失敗;
-                        rtn.Messsage = "總金額低於折價券最低消費金額";
-                        return BadRequest(rtn);
-                    }
+                   
 
                     // if 有折...  => 防呆 => 正確 => toatal*乘數
                     if (shoppingCartVM.CouponData.UsedCouponID != null )
                     {
-                        try {
-                            //驗證前端折價券金額是否異常,如果正常就扣錢
-                            if (UsingCoupon.Discount== shoppingCartVM.CouponData.Discount)
-                            {                                                 
-                                //折價大於一減多少錢,小於一用乘的打折 //int to decimai 
-                                toatal = (UsingCoupon.Discount > 1) ? toatal - Convert.ToInt32(UsingCoupon.Discount) : Convert.ToInt32(Convert.ToDecimal(toatal) * UsingCoupon.Discount);                                                                                          
-                            }
+						// 折價券最低消費 ........
+						if (UsingCoupon.LeastCost < toatal)
+						{
+							try
+							{
+								//驗證前端折價券金額是否異常,如果正常就扣錢
+								if (UsingCoupon.Discount == shoppingCartVM.CouponData.Discount)
+								{
+									//折價大於一減多少錢,小於一用乘的打折 //int to decimai 
+									toatal = (UsingCoupon.Discount > 1) ? toatal - Convert.ToInt32(UsingCoupon.Discount) : Convert.ToInt32(Convert.ToDecimal(toatal) * UsingCoupon.Discount);
+								}
 
-                        } 
-                        catch {
-                            rtn.Code = (int)RetunCode.呼叫失敗;
-                            rtn.Messsage = "折價券金額異常";
-                            transaction.Rollback();
-                            return BadRequest(rtn);
+							}
+							catch
+							{
+								rtn.Code = (int)RetunCode.呼叫失敗;
+								rtn.Messsage = "折價券金額異常";
+								transaction.Rollback();
+								return BadRequest(rtn);
 
-                        };
-                      
-                    }
+							};
+						}
+
+						else
+						{
+							rtn.Code = (int)RetunCode.呼叫失敗;
+							rtn.Messsage = "總金額低於折價券最低消費金額";
+							return BadRequest(rtn);
+						}
+
+					}
 
                     //驗證折扣後金額是否正確
                     if (toatal != shoppingCartVM.Total) {
@@ -250,7 +257,6 @@ namespace ServiceFUEN.Controllers
                         rtn.Messsage = "金額異常";
                         transaction.Rollback();
                         return BadRequest(rtn);
-
                     }
                                                  
                       _context.OrderItems.AddRange(orderItemList);

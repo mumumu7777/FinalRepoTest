@@ -174,7 +174,7 @@ export default {
       searchText: "",
       paymentForm: "",
       adressval: null,
-      adressinput: "",
+      adressinput:"",
       //折價券資料
       couponinput: "",
       couponmessage: "",
@@ -293,7 +293,7 @@ export default {
     },
 
     //呼叫折價券api
-    getCoupon() {
+    async getCoupon() {
       if (this.couponinput) {
         this.$axios
           .get(`api/ShoppingCart/CatchCoupon?CouponCode=${this.couponinput}`)
@@ -444,16 +444,16 @@ export default {
             CartProducts: Array.from(this.cartsSelect),
             CouponCode: this.couponinput,
             CouponData: {
-              UsedCouponID: 1,
+              UsedCouponID: this.couponID,
               CouponCode: this.couponinput,
-              Discount: this.coupondiscountdata,
+              Discount: parseInt(this.coupondiscountdata),
             },
             Adress: {
               Name: this.adressval.name,
               ZipCode: this.adressval.zipCode,
               County: this.adressval.county,
               CountyName: this.adressval.countyName,
-              InputRegion: this.adressval.adressinput,
+              InputRegion: this.adressinput,
             },
           };
 
@@ -485,7 +485,7 @@ export default {
                   */
                   this.$nextTick(() => {
                     // 將表單內容post到綠界金流
-                    document.getElementById("payment").submit();
+                    document.querySelector("#payment").submit();
                     this.paymentForm = "";
                   });
                 }
@@ -504,7 +504,7 @@ export default {
     },
 
     // 購買後將後端產的付款參數組成form post到綠界
-    buildPaymentForm(trendModels) {
+    async buildPaymentForm(trendModels) {
       let rtn = ``;
       rtn += `<form action="${trendModels.url}" method="post" id="payment">`;
       // 必要參數
