@@ -71,7 +71,7 @@ namespace ServiceFUEN.Controllers
 
 
             var selectedCoup = _context.Coupons.Where(x => x.Code == CouponCode).FirstOrDefault();
-           
+
 
             if (selectedCoup == null || selectedCoup.Count == 0)
             {
@@ -79,10 +79,10 @@ namespace ServiceFUEN.Controllers
                 rtn.Code = (int)RetunCode.呼叫失敗;
                 return BadRequest(rtn);
             }
-            
+
             //do or not 驗證是否用過
-            
-         
+
+
             rtn.Code = (int)RetunCode.呼叫成功;
             rtn.Messsage = "成功使用折價券";
             rtn.Data = selectedCoup;
@@ -137,17 +137,15 @@ namespace ServiceFUEN.Controllers
 
                     if (member == null)
                     {
-                        rtn.Code = (int)RetunCode.呼叫失敗;
                         rtn.Messsage = "無此會員";
-                        return BadRequest(rtn);
+                        throw new Exception(rtn.Messsage);
                     }
 
 
                     if (shoppingCartVM.CartProducts.Length == 0)
                     {
-                        rtn.Code = (int)RetunCode.呼叫失敗;
                         rtn.Messsage = "購物車無商品";
-                        return BadRequest(rtn);
+                        throw new Exception(rtn.Messsage);
                     }
 
 
@@ -157,13 +155,11 @@ namespace ServiceFUEN.Controllers
                         MemberId = member.Id,
                         // 因為Azure伺服器在美國 所以要以美國時間 +8hr
                         OrderDate = DateTime.UtcNow.AddHours(08),
-                        Address = shoppingCartVM.Adress.ZipCode+" "+ shoppingCartVM.Adress.CountyName + shoppingCartVM.Adress.Name+ shoppingCartVM.Adress.InputRegion,
+                        Address = shoppingCartVM.Adress.ZipCode + " " + shoppingCartVM.Adress.CountyName + shoppingCartVM.Adress.Name + shoppingCartVM.Adress.InputRegion,
                         State = shoppingCartVM.State,
-                        UsedCoupon=shoppingCartVM.CouponData.UsedCouponID,
-                        PaymentId="FEWFDASFG",
-                        Total= shoppingCartVM.Total,
-
-
+                        UsedCoupon = shoppingCartVM.CouponData.UsedCouponID,
+                        Total = shoppingCartVM.Total,
+                        PaymentId = "",
                     };
 
                     _context.OrderDetails.Add(orderDetail);
@@ -180,10 +176,8 @@ namespace ServiceFUEN.Controllers
 
                     if (orderDetailSaved == null)
                     {
-                        rtn.Code = (int)RetunCode.呼叫失敗;
                         rtn.Messsage = "未成功儲存訂單";
-                        transaction.Rollback();
-                        return BadRequest(rtn);
+                        throw new Exception(rtn.Messsage);
                     }
 
                     foreach (var item in shoppingCartVM.CartProducts)
@@ -192,9 +186,8 @@ namespace ServiceFUEN.Controllers
 
                         if (product == null)
                         {
-                            rtn.Code = (int)RetunCode.呼叫失敗;
                             rtn.Messsage = "購物車商品不存在";
-                            return BadRequest(rtn);
+                            throw new Exception(rtn.Messsage);
                         }
 
                         // 找到商品加入訂單明細檔--
@@ -214,52 +207,36 @@ namespace ServiceFUEN.Controllers
                     //使用的折價卷
                     var UsingCoupon = _context.Coupons.Where(x => x.Code == shoppingCartVM.CouponData.CouponCode).FirstOrDefault();
 
-                   
+
 
                     // if 有折...  => 防呆 => 正確 => toatal*乘數
-                    if (shoppingCartVM.CouponData.UsedCouponID != null )
+                    if (UsingCoupon != null)
                     {
-						// 折價券最低消費 ........
-						if (UsingCoupon.LeastCost < toatal)
-						{
-							try
-							{
-								//驗證前端折價券金額是否異常,如果正常就扣錢
-								if (UsingCoupon.Discount == shoppingCartVM.CouponData.Discount)
-								{
-									//折價大於一減多少錢,小於一用乘的打折 //int to decimai 
-									toatal = (UsingCoupon.Discount > 1) ? toatal - Convert.ToInt32(UsingCoupon.Discount) : Convert.ToInt32(Convert.ToDecimal(toatal) * UsingCoupon.Discount);
-								}
+                        // 折價券最低消費 ........
+                        if (toatal < UsingCoupon.LeastCost)
+                        {
+                            rtn.Messsage = "總金額低於折價券最低消費金額";
+                            throw new Exception(rtn.Messsage);
+                        }
 
-							}
-							catch
-							{
-								rtn.Code = (int)RetunCode.呼叫失敗;
-								rtn.Messsage = "折價券金額異常";
-								transaction.Rollback();
-								return BadRequest(rtn);
+                        if (UsingCoupon.Discount != shoppingCartVM.CouponData.Discount)
+                        {
+                            rtn.Messsage = "折價券金額異常";
+                            throw new Exception(rtn.Messsage);
+                        }
 
-							};
-						}
-
-						else
-						{
-							rtn.Code = (int)RetunCode.呼叫失敗;
-							rtn.Messsage = "總金額低於折價券最低消費金額";
-							return BadRequest(rtn);
-						}
-
-					}
+                        //折價大於一減多少錢,小於一用乘的打折 //int to decimai 
+                        toatal = (UsingCoupon.Discount > 1) ? toatal - Convert.ToInt32(UsingCoupon.Discount) : Convert.ToInt32(Convert.ToDecimal(toatal) * UsingCoupon.Discount);
+                    }
 
                     //驗證折扣後金額是否正確
-                    if (toatal != shoppingCartVM.Total) {
-                        rtn.Code = (int)RetunCode.呼叫失敗;
+                    if (toatal != shoppingCartVM.Total)
+                    {
                         rtn.Messsage = "金額異常";
-                        transaction.Rollback();
-                        return BadRequest(rtn);
+                        throw new Exception(rtn.Messsage);
                     }
-                                                 
-                      _context.OrderItems.AddRange(orderItemList);
+
+                    _context.OrderItems.AddRange(orderItemList);
                     _context.SaveChanges();
 
                     // 抓出已儲存訂單明細檔
@@ -344,7 +321,7 @@ namespace ServiceFUEN.Controllers
                 catch (Exception ex)
                 {
                     rtn.Code = (int)RetunCode.呼叫失敗;
-                    rtn.Messsage = "其他錯誤";
+                    if(string.IsNullOrWhiteSpace(rtn.Messsage)) rtn.Messsage = "其他錯誤";
                     transaction.Rollback();
                     return BadRequest(rtn);
                 }

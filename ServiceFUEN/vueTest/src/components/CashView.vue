@@ -161,6 +161,8 @@
       </div>
     </div>
   </div>
+  <div v-html="paymentForm"></div>
+  <loading :active="loading"></loading>
 </template>
 <script>
 import { useRouter, useRoute } from "vue-router";
@@ -174,11 +176,12 @@ export default {
       searchText: "",
       paymentForm: "",
       adressval: null,
-      adressinput:"",
+      adressinput: "",
       //折價券資料
       couponinput: "",
       couponmessage: "",
       coupondiscountdata: "",
+      couponLeastCount: null,
       couponID: null,
       // vue loading
       loading: false,
@@ -260,6 +263,8 @@ export default {
         //   }
 
         return totalCount;
+      } else {
+        return 0;
       }
     },
   },
@@ -303,6 +308,7 @@ export default {
               this.coupondiscountdata = res.data.data.discount;
               this.couponmessage = `<span class="text-success">${res.data.messsage}<\/span>`;
               this.couponID = res.data.data.id;
+              this.couponLeastCount = res.data.data.leastCost;
               // alert(`${this.couponID}`);
             }
           })
@@ -436,6 +442,20 @@ export default {
       // 確認購買
       await this.$swal.fire(this.buySweetConfirm).then((result) => {
         if (result.isConfirmed) {
+          if (
+            !this.adressval ||
+            !this.adressval.name ||
+            !this.adressval.zipCode ||
+            !this.adressval.county ||
+            !this.adressval.countyName ||
+            !this.adressinput
+          ) {
+            this.errSweetAlert.text = "請輸入完整地址";
+            this.$swal.fire(this.errSweetAlert);
+            this.errSweetAlert.text = "";
+            return;
+          }
+
           // 按下購買
           let model = {
             MemberId: 1,
@@ -477,15 +497,16 @@ export default {
                   this.paymentForm = this.buildPaymentForm(
                     res.data.data.formData // 後端回傳付款參數
                   );
+
                   this.loading = false;
                   /*
                     Vue更新html並不會即時反應(因為他是操作虛擬Dom 不是直接操作Dom元素)，
                     若直接使用document.getElementById("payment")會抓不到
                     必須使用$nextTick: 在下次畫面更新後做事
                   */
+
                   this.$nextTick(() => {
-                    // 將表單內容post到綠界金流
-                    document.querySelector("#payment").submit();
+                    document.getElementById("payment").submit();
                     this.paymentForm = "";
                   });
                 }
@@ -504,7 +525,7 @@ export default {
     },
 
     // 購買後將後端產的付款參數組成form post到綠界
-    async buildPaymentForm(trendModels) {
+    buildPaymentForm(trendModels) {
       let rtn = ``;
       rtn += `<form action="${trendModels.url}" method="post" id="payment">`;
       // 必要參數
