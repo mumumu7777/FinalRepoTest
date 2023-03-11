@@ -20,7 +20,7 @@ const routes = [
     name: 'homepage',
   },
   {
-    path: "/checkoutreport",
+    path: "/checkoutreport/:id",
     component: CheckOutReport,
     name: 'checkoutreport',
   },
